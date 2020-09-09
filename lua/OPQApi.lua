@@ -13,7 +13,7 @@ local http = require("http")
 local log = require("log")
 local json = require("json")
 
-Pd = "1.0.0" --版本号请忽改动
+Pd = "1.0.1" --版本号请忽改动
 
 --发送消息
 function SedMsg(CurrentQQ,Data,ToType,MsgType,Groupid,VoiceUrl,VoiceBase64Buf,PicBase64Buf,Md5,PicUrl,FlashPic,Msg)
@@ -47,26 +47,6 @@ function GroupMgr(CurrentQQ,ActionType,GroupID,ActionUserID,Content)
         Content = Content --加群理由
         }
     )
-    return ApiRet
-end
-
---抢红包处理
-function RedBag(CurrentQQ, data)
-    ApiRet = Api.Api_OpenRedBag(CurrentQQ, data.RedBaginfo)
-    if (data.RedBaginfo.RedType == 12) then
-         luaRes =
-                Api.Api_SendMsg(
-                CurrentQQ,
-                {
-                    toUser = data.FromGroupId,
-                    sendToType = 2,
-                    sendMsgType = "TextMsg",
-                    groupid = 0,
-                    content = data.RedBaginfo.Tittle,
-                    atUser = 0
-                }
-            )
-    end
     return ApiRet
 end
 
@@ -246,6 +226,23 @@ end
 --获取当前时间
 function Date(time)
     return os.date(time, os.time())
+end
+
+--url编码
+function Url_Encode(str)
+    if (str) then
+        str = string.gsub(str, "\n", "\r\n")
+        str =
+            string.gsub(
+            str,
+            "([^%w ])",
+            function(c)
+                return string.format("%%%02X", string.byte(c))
+            end
+        )
+        str = string.gsub(str, " ", "+")
+    end
+    return str
 end
 
 --At处理,0表示at全体
