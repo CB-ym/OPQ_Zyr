@@ -13,7 +13,7 @@ local http = require("http")
 local log = require("log")
 local json = require("json")
 
-Pd = "1.0.1" --版本号请忽改动
+Pd = "1.0.5" --版本号请忽改动
 
 --发送消息
 function SedMsg(CurrentQQ,Data,ToType,MsgType,Groupid,VoiceUrl,VoiceBase64Buf,PicBase64Buf,Md5,PicUrl,FlashPic,Msg)
@@ -226,6 +226,28 @@ end
 --获取当前时间
 function Date(time)
     return os.date(time, os.time())
+end
+
+--禁用插件
+function State(state,str,file)
+    OIO = Read("lua/"..str..".json") --群插件状态查询
+        Ojson = JsonDeCode(OIO)
+        Msg = nil
+        if (Ojson.num ~= 0) then
+            for i, v in pairs(Ojson.zyr) do --查询插件是否存在
+                if (v.file == file) then --存在则更新插件完毕
+                    if (v.is == state) then
+                        Msg = "error"
+                    else
+                        Ojson.zyr[i].is = state
+                        D = JsonEnCode(Ojson)
+                        Wirte("lua/"..str..".json",D)
+                        Msg = "ok"
+                    end
+                end
+            end
+        end
+    return Msg
 end
 
 --url编码
